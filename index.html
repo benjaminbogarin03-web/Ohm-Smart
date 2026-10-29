@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ohm Smart — Ley de Ohm, resistencias, unidades y potencia</title>
+<meta name="description" content="Ohm Smart: calculadora de Ley de Ohm, lector de resistencias por colores, conversor de unidades eléctricas y calculadora de potencia.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500&family=IBM+Plex+Sans:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0A0D12;--panel:#1A2029;--line:#2A3340;--gray:#6B7685;--mute:#8A95A5;--txt:#E5E9EF;--blue:#2563EB;--sky:#38BDF8;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--txt);font:400 1rem/1.6 "IBM Plex Sans",system-ui,sans-serif}
+.wrap{max-width:720px;margin:0 auto;padding:0 1rem}
+header{border-bottom:1px solid var(--line);position:sticky;top:0;background:var(--bg);z-index:5}
+header .wrap{display:flex;align-items:center;gap:1.5rem;overflow-x:auto}
+.brand{font-weight:600;font-size:1.15rem;padding:1rem 0;white-space:nowrap;color:var(--sky)}
+nav{display:flex;gap:.25rem}
+nav a{color:var(--mute);text-decoration:none;padding:1rem .75rem;white-space:nowrap;border-bottom:2px solid transparent}
+nav a:hover{color:var(--txt)}
+nav a[aria-current=page]{color:var(--txt);border-bottom-color:var(--sky)}
+a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--sky);outline-offset:2px}
+main{padding:2.5rem 0 3rem}
+h1{font-size:clamp(1.75rem,5vw,2.25rem);line-height:1.15;margin:0 0 .5rem;font-weight:600}
+.sub{color:var(--mute);margin:0 0 2rem;max-width:60ch}
+.tool,.panel{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:1.25rem}
+label{display:block;color:var(--mute);font-size:.9rem;margin-bottom:1rem}
+.u{color:var(--gray)}
+input,select{display:block;width:100%;margin-top:.35rem;padding:.7rem .8rem;background:var(--bg);color:var(--txt);border:1px solid var(--line);border-radius:6px;font:inherit}
+input:focus,select:focus{border-color:var(--blue)}
+.res{margin-top:.5rem;padding:1rem;background:var(--bg);border-radius:6px;font:500 1.35rem "IBM Plex Mono",monospace;color:var(--sky);overflow-wrap:anywhere}
+.res.vacio{font:400 1rem "IBM Plex Sans",sans-serif;color:var(--mute)}
+.res.error{font:600 1rem "IBM Plex Sans",sans-serif;color:#ff8a8a}
+#cuenta{display:flex;gap:.5rem;margin-bottom:1.25rem}
+#cuenta button{flex:1;padding:.6rem;background:var(--bg);color:var(--txt);border:1px solid var(--line);border-radius:6px;font:inherit;cursor:pointer}
+#cuenta button[aria-pressed=true]{background:var(--blue);border-color:var(--blue);color:#fff}
+#svg{width:100%;height:auto;display:block;margin-bottom:1.25rem}
+.banda{margin-bottom:1rem}
+.bn{display:flex;justify-content:space-between;font-size:.9rem;color:var(--mute);margin-bottom:.4rem}
+.bn strong{color:var(--txt);font-weight:600}
+.sw{display:flex;flex-wrap:wrap;gap:.45rem}
+.sw button{width:2.1rem;height:2.1rem;border-radius:50%;background:var(--c);border:2px solid var(--line);cursor:pointer;padding:0}
+.sw button.on{border-color:var(--sky);box-shadow:0 0 0 2px var(--bg),0 0 0 4px var(--sky)}
+.rv{font:500 2rem "IBM Plex Mono",monospace;color:var(--sky)}
+.rt{color:var(--mute);margin:.25rem 0 0}
+footer{border-top:1px solid var(--line);color:var(--mute);font-size:.9rem;padding:1.5rem 0 2.5rem}
+footer p{margin:.25rem 0}
+@media(max-width:480px){.sw button{width:2.4rem;height:2.4rem}}
+</style>
+</head>
+<body>
+<header><div class="wrap">
+  <span class="brand">Ohm Smart</span>
+  <nav aria-label="Herramientas">
+    <a href="#ohm" data-v="ohm">Ley de Ohm</a>
+    <a href="#res" data-v="res">Resistencias</a>
+    <a href="#uni" data-v="uni">Unidades</a>
+    <a href="#pot" data-v="pot">Potencia</a>
+  </nav>
+</div></header>
+
+<main class="wrap">
+  <section id="ohm"><h1>Ley de Ohm</h1><p class="sub">Elige qué quieres calcular, ingresa los dos valores que conoces y obtén el resultado.</p><div class="tool"></div></section>
+
+  <section id="res" hidden>
+    <h1>Lector de resistencias</h1>
+    <p class="sub">Elige la cantidad de bandas y toca el color de cada una. El valor se calcula al instante.</p>
+    <div class="panel">
+      <div id="cuenta"></div>
+      <svg id="svg" viewBox="0 0 360 110" role="img" aria-label="Resistencia con las bandas de colores elegidas"></svg>
+      <div id="bandas"></div>
+      <div class="res" style="margin-top:1rem"><div class="rv" id="rv"></div><p class="rt" id="rt"></p><p class="rt" id="rr"></p></div>
+    </div>
+  </section>
+
+  <section id="uni" hidden><h1>Conversor de unidades</h1><p class="sub">Convierte voltios, amperios y ohmios entre sus múltiplos.</p><div class="tool"></div></section>
+
+  <section id="pot" hidden><h1>Calculadora de potencia</h1><p class="sub">Calcula la potencia eléctrica en watts con la fórmula que se ajuste a tus datos.</p><div class="tool"></div></section>
+</main>
+
+<footer><div class="wrap">
+  <p>Proyecto de la Escuela Técnica Carmen Molina de Llano.</p>
+  <p>Bogarín Benjamín, Almirón Benjamín, Almirón Arturo y Gómez Brian.</p>
+</div></footer>
+
+<script>
+const $=(s,r=document)=>r.querySelector(s);
+const fmt=n=>Number(n).toLocaleString("es-AR",{maximumFractionDigits:6});
+const num=s=>{s=s.trim().replace(",",".");return s===""?NaN:Number(s)};
+
+/* ---------- Calculadoras (Ohm, unidades, potencia) ---------- */
+function calc(id,modos){
+  const root=$("#"+id+" .tool");
+  root.innerHTML='<label>Qué calcular<select></select></label><div class="campos"></div><output class="res" aria-live="polite"></output>';
+  const sel=$("select",root),campos=$(".campos",root),out=$("output",root);
+  modos.forEach((m,i)=>sel.add(new Option(m.t,i)));
+  function actualizar(){
+    const m=modos[sel.value];
+    const v=[...campos.querySelectorAll("input")].map(x=>num(x.value));
+    if(v.some(isNaN)){out.className="res vacio";out.textContent=v.length>1?"Completa los dos valores para ver el resultado.":"Ingresa un valor para ver el resultado.";return}
+    const r=m.f(...v);
+    if(r===null){out.className="res error";out.textContent=m.z;return}
+    out.className="res";
+    out.textContent=m.eco?fmt(v[0])+" "+m.c[0][1]+" = "+fmt(r)+" "+m.u:m.r+" = "+fmt(r)+" "+m.u;
+  }
+  function pintar(){
+    const m=modos[sel.value];
+    campos.innerHTML=m.c.map(([l,u],i)=>'<label>'+l+' <span class="u">('+u+')</span><input inputmode="decimal" autocomplete="off"></label>').join("");
+    campos.querySelectorAll("input").forEach(x=>x.addEventListener("input",actualizar));
+    actualizar();
+  }
+  sel.addEventListener("change",pintar);pintar();
+}
+const V=["Voltaje","V"],I=["Corriente","A"],R=["Resistencia","Ω"];
+calc("ohm",[
+  {t:"Corriente (I = V / R)",c:[V,R],r:"I",u:"A",z:"La resistencia no puede ser 0.",f:(v,r)=>r===0?null:v/r},
+  {t:"Resistencia (R = V / I)",c:[V,I],r:"R",u:"Ω",z:"La corriente no puede ser 0.",f:(v,i)=>i===0?null:v/i},
+  {t:"Voltaje (V = I × R)",c:[I,R],r:"V",u:"V",f:(i,r)=>i*r}
+]);
+calc("uni",[
+  {t:"Voltios → milivoltios",c:[["Valor","V"]],u:"mV",eco:1,f:v=>v*1000},
+  {t:"Amperios → miliamperios",c:[["Valor","A"]],u:"mA",eco:1,f:v=>v*1000},
+  {t:"Ohmios → kiloohmios",c:[["Valor","Ω"]],u:"kΩ",eco:1,f:v=>v/1000},
+  {t:"Kiloohmios → ohmios",c:[["Valor","kΩ"]],u:"Ω",eco:1,f:v=>v*1000},
+  {t:"Ohmios → megaohmios",c:[["Valor","Ω"]],u:"MΩ",eco:1,f:v=>v/1e6}
+]);
+calc("pot",[
+  {t:"P = V × I",c:[V,I],r:"P",u:"W",f:(v,i)=>v*i},
+  {t:"P = I² × R",c:[I,R],r:"P",u:"W",f:(i,r)=>i*i*r},
+  {t:"P = V² / R",c:[V,R],r:"P",u:"W",z:"La resistencia no puede ser 0.",f:(v,r)=>r===0?null:v*v/r}
+]);
+
+/* ---------- Lector de resistencias ---------- */
+const COL=[
+ {n:"Negro",h:"#111418",d:0,m:1},
+ {n:"Marrón",h:"#7b4a2a",d:1,m:10,t:1},
+ {n:"Rojo",h:"#d92d2d",d:2,m:100,t:2},
+ {n:"Naranja",h:"#f08a24",d:3,m:1e3},
+ {n:"Amarillo",h:"#f2d230",d:4,m:1e4},
+ {n:"Verde",h:"#2e9d4f",d:5,m:1e5,t:.5},
+ {n:"Azul",h:"#2f6fe0",d:6,m:1e6,t:.25},
+ {n:"Violeta",h:"#8a4fd1",d:7,m:1e7,t:.1},
+ {n:"Gris",h:"#8b93a0",d:8,m:1e8},
+ {n:"Blanco",h:"#f2f2f2",d:9,m:1e9},
+ {n:"Dorado",h:"#c9a227",m:.1,t:5},
+ {n:"Plateado",h:"#b8bec7",m:.01,t:10}
+];
+const ESQ={3:"ddm",4:"ddmt",5:"dddmt"};
+const DEF={3:[1,0,2],4:[1,0,2,10],5:[1,0,0,2,10]};
+let n=4,sel=[...DEF[4]];
+
+function fmtOhm(v){
+  for(const [f,s] of [[1e9,"GΩ"],[1e6,"MΩ"],[1e3,"kΩ"]]) if(v>=f) return fmt(+(v/f).toFixed(3))+" "+s;
+  return fmt(+v.toFixed(3))+" Ω";
+}
+function dibujar(){
+  const esq=ESQ[n];let d=0,m=1,t=20;
+  [...esq].forEach((k,i)=>{const c=COL[sel[i]];if(k==="d")d=d*10+c.d;else if(k==="m")m=c.m;else t=c.t});
+  const v=d*m;
+  const bandas=[...esq].map((k,i)=>'<rect x="'+(k==="t"?235:105+30*i)+'" y="25" width="14" height="60" fill="'+COL[sel[i]].h+'" stroke="rgba(0,0,0,.45)"/>').join("");
+  $("#svg").innerHTML='<line x1="10" y1="55" x2="350" y2="55" stroke="#6B7685" stroke-width="5" stroke-linecap="round"/><rect x="80" y="25" width="200" height="60" rx="16" fill="#8fc9ea"/>'+bandas;
+  $("#rv").textContent=fmtOhm(v);
+  $("#rt").textContent="Tolerancia ±"+fmt(t)+"%"+(esq.includes("t")?"":" (sin banda de tolerancia)");
+  $("#rr").textContent="Valor real entre "+fmtOhm(v*(1-t/100))+" y "+fmtOhm(v*(1+t/100));
+}
+function pintarRes(){
+  $("#cuenta").innerHTML=[3,4,5].map(k=>'<button type="button" aria-pressed="'+(k===n)+'" data-n="'+k+'">'+k+' bandas</button>').join("");
+  $("#bandas").innerHTML=[...ESQ[n]].map((k,i)=>{
+    const nombre=k==="d"?"Banda "+(i+1):k==="m"?"Multiplicador":"Tolerancia";
+    const op=COL.map((c,j)=>[c,j]).filter(([c])=>k==="d"?c.d!==undefined:k==="m"?c.m!==undefined:c.t!==undefined);
+    return '<div class="banda"><div class="bn"><span>'+nombre+'</span><strong>'+COL[sel[i]].n+'</strong></div><div class="sw">'+
+      op.map(([c,j])=>'<button type="button" style="--c:'+c.h+'" class="'+(j===sel[i]?"on":"")+'" aria-pressed="'+(j===sel[i])+'" aria-label="'+nombre+': '+c.n+'" title="'+c.n+'" data-b="'+i+'" data-j="'+j+'"></button>').join("")+'</div></div>';
+  }).join("");
+  dibujar();
+}
+$("#cuenta").addEventListener("click",e=>{
+  const b=e.target.closest("[data-n]");if(!b)return;
+  n=+b.dataset.n;sel=[...DEF[n]];pintarRes();
+  $('#cuenta [aria-pressed="true"]').focus();
+});
+$("#bandas").addEventListener("click",e=>{
+  const b=e.target.closest("[data-b]");if(!b)return;
+  const i=+b.dataset.b;sel[i]=+b.dataset.j;
+  const fila=b.closest(".banda");
+  fila.querySelectorAll("button").forEach(x=>{const on=x===b;x.classList.toggle("on",on);x.setAttribute("aria-pressed",on)});
+  $("strong",fila).textContent=COL[sel[i]].n;
+  dibujar();
+});
+pintarRes();
+
+/* ---------- Navegación ---------- */
+const vistas=["ohm","res","uni","pot"];
+function ir(){
+  let id=location.hash.slice(1);if(!vistas.includes(id))id="ohm";
+  vistas.forEach(v=>{$("#"+v).hidden=v!==id;$('[data-v="'+v+'"]').setAttribute("aria-current",v===id?"page":"false")});
+}
+addEventListener("hashchange",ir);ir();
+</script>
+</body>
+</html>
