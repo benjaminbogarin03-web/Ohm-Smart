@@ -44,6 +44,14 @@ input:focus,select:focus{border-color:var(--blue)}
 .sw button.on{border-color:var(--sky);box-shadow:0 0 0 2px var(--bg),0 0 0 4px var(--sky)}
 .rv{font:500 2rem "IBM Plex Mono",monospace;color:var(--sky)}
 .rt{color:var(--mute);margin:.25rem 0 0}
+.menu{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.menu a{display:block;padding:1.25rem;background:var(--panel);border:1px solid var(--line);border-radius:10px;color:var(--txt);text-decoration:none}
+.menu a:hover{border-color:var(--blue)}
+.menu h2{margin:0 0 .35rem;font-size:1.15rem;font-weight:600;color:var(--sky)}
+.menu p{margin:0;color:var(--mute);font-size:.95rem}
+.volver{display:inline-block;color:var(--mute);text-decoration:none;margin-bottom:1.25rem;font-size:.9rem}
+.volver:hover{color:var(--txt)}
+@media(max-width:560px){.menu{grid-template-columns:1fr}}
 footer{border-top:1px solid var(--line);color:var(--mute);font-size:.9rem;padding:1.5rem 0 2.5rem}
 footer p{margin:.25rem 0}
 @media(max-width:480px){.sw button{width:2.4rem;height:2.4rem}}
@@ -51,8 +59,9 @@ footer p{margin:.25rem 0}
 </head>
 <body>
 <header><div class="wrap">
-  <span class="brand">Ohm Smart</span>
+  <a class="brand" href="#inicio" style="text-decoration:none">Ohm Smart</a>
   <nav aria-label="Herramientas">
+    <a href="#inicio" data-v="inicio">Inicio</a>
     <a href="#ohm" data-v="ohm">Ley de Ohm</a>
     <a href="#res" data-v="res">Resistencias</a>
     <a href="#uni" data-v="uni">Unidades</a>
@@ -61,9 +70,21 @@ footer p{margin:.25rem 0}
 </div></header>
 
 <main class="wrap">
-  <section id="ohm"><h1>Ley de Ohm</h1><p class="sub">Elige qué quieres calcular, ingresa los dos valores que conoces y obtén el resultado.</p><div class="tool"></div></section>
+  <section id="inicio">
+    <h1>Ohm Smart</h1>
+    <p class="sub">Calcula, convierte y aprende electrónica básica. Elige una herramienta para empezar.</p>
+    <div class="menu">
+      <a href="#ohm"><h2>Ley de Ohm</h2><p>Calcula voltaje, corriente o resistencia.</p></a>
+      <a href="#res"><h2>Lector de resistencias</h2><p>Elige los colores de las bandas y obtén el valor.</p></a>
+      <a href="#uni"><h2>Conversor de unidades</h2><p>Pasa entre V y mV, A y mA, Ω, kΩ y MΩ.</p></a>
+      <a href="#pot"><h2>Calculadora de potencia</h2><p>Obtén la potencia en watts con tres fórmulas.</p></a>
+    </div>
+  </section>
+
+  <section id="ohm" hidden><a class="volver" href="#inicio">← Menú principal</a><h1>Ley de Ohm</h1><p class="sub">Elige qué quieres calcular, ingresa los dos valores que conoces y obtén el resultado.</p><div class="tool"></div></section>
 
   <section id="res" hidden>
+    <a class="volver" href="#inicio">← Menú principal</a>
     <h1>Lector de resistencias</h1>
     <p class="sub">Elige la cantidad de bandas y toca el color de cada una. El valor se calcula al instante.</p>
     <div class="panel">
@@ -74,9 +95,9 @@ footer p{margin:.25rem 0}
     </div>
   </section>
 
-  <section id="uni" hidden><h1>Conversor de unidades</h1><p class="sub">Convierte voltios, amperios y ohmios entre sus múltiplos.</p><div class="tool"></div></section>
+  <section id="uni" hidden><a class="volver" href="#inicio">← Menú principal</a><h1>Conversor de unidades</h1><p class="sub">Convierte voltios, amperios y ohmios entre sus múltiplos.</p><div class="tool"></div></section>
 
-  <section id="pot" hidden><h1>Calculadora de potencia</h1><p class="sub">Calcula la potencia eléctrica en watts con la fórmula que se ajuste a tus datos.</p><div class="tool"></div></section>
+  <section id="pot" hidden><a class="volver" href="#inicio">← Menú principal</a><h1>Calculadora de potencia</h1><p class="sub">Calcula la potencia eléctrica en watts con la fórmula que se ajuste a tus datos.</p><div class="tool"></div></section>
 </main>
 
 <footer><div class="wrap">
@@ -190,12 +211,12 @@ $("#bandas").addEventListener("click",e=>{
 pintarRes();
 
 /* ---------- Navegación ---------- */
-const vistas=["ohm","res","uni","pot"];
+const vistas=["inicio","ohm","res","uni","pot"];
 function ir(){
-  let id=location.hash.slice(1);if(!vistas.includes(id))id="ohm";
+  let id=location.hash.slice(1);if(!vistas.includes(id))id="inicio";
   vistas.forEach(v=>{$("#"+v).hidden=v!==id;$('[data-v="'+v+'"]').setAttribute("aria-current",v===id?"page":"false")});
 }
-addEventListener("hashchange",ir);ir();
+addEventListener("hashchange",()=>{ir();scrollTo(0,0)});ir();
 </script>
 </body>
 </html>
